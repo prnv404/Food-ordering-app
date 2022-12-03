@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { VandorLoginInput } from '../dto'
+import { Vandor } from '../model'
 import { GenerateSignature, validatePassword } from '../utils'
 import { findVandor } from './Admin-Controller'
 
@@ -33,6 +34,15 @@ export const VandorLogin = async (req: Request, res: Response, next: NextFunctio
 
 export const GetVandorProfile = async (req: Request, res: Response, next: NextFunction) => {
 
+    const user = req.user
+
+    if (user) {
+        const existingVandor = await findVandor(user._id)
+        res.json(existingVandor)
+    } else {
+        res.json({
+            message:"No Vandor found"})
+    }
 }
 
 export const UpdateVandorProfile = async (req: Request, res: Response, next: NextFunction) => {
