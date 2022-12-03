@@ -16,13 +16,7 @@ export const findVandor = async (id: string | undefined, email?: string) => {
 }
 
 
-/**
- * It creates a new vandor in the database
- * @param {Request} req - The request object. This contains information about the HTTP request that
- * raised the event.
- * @param {Response} res - The response object.
- * @param {NextFunction} next - The next function to be called in the middleware chain.
- */
+
 export const CreateVandor = async (req: Request, res: Response, next: NextFunction) => {
     
     const { name, password, phone, foodType, ownerName, pincode, address ,email} = <CreateVandorInput>req.body
@@ -61,15 +55,6 @@ export const CreateVandor = async (req: Request, res: Response, next: NextFuncti
 }
 
 
-/**
- * It gets all the vandors from the database and returns them in a json format
- * @param {Request} req - Request - This is the request object that contains all the information about
- * the request that was made to the server.
- * @param {Response} res - The response object.
- * @param {NextFunction} next - NextFunction - This is a function that we can call to pass control to
- * the next middleware function in line.
- * @returns An array of vandors
- */
 export const GetVandors = async (req: Request, res: Response, next: NextFunction) => {
     
     const vandors = await Vandor.find()
@@ -81,15 +66,7 @@ export const GetVandors = async (req: Request, res: Response, next: NextFunction
 }
 
 
-/**
- * It takes a vandor id from the request params, finds the vandor in the database, and returns the
- * vandor if it exists
- * @param {Request} req - Request - This is the request object that contains all the information about
- * the request that was made to the server.
- * @param {Response} res - The response object.
- * @param {NextFunction} next - This is a function that we call if we want to move on to the next
- * middleware in line.
- */
+
 export const GetVandorById = async (req: Request, res: Response, next: NextFunction) => {
     
     const vandorId = req.params.id

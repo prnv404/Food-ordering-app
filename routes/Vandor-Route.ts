@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express'
-import { AddFood, GetFoods, GetVandorProfile, UpdateVandorProfile, UpdateVandorService, VandorLogin } from '../controller'
+import { AddFood, GetFoods, GetVandorProfile, UpdateCoverImage, UpdateVandorProfile, UpdateVandorService, VandorLogin } from '../controller'
 import { Authenticate } from '../middleware'
 import multer from 'multer'
 
@@ -15,6 +15,7 @@ const imageStorage = multer.diskStorage({
     }
 
 })
+
 
 const images = multer({ storage: imageStorage }).array('images', 10)
 
@@ -33,7 +34,10 @@ router.patch('/service',UpdateVandorService)
 
 router.post('/food',images,AddFood)
 
-router.get('/foods',GetFoods)
+router.get('/foods', GetFoods)
+
+router.patch('/cover', images, UpdateCoverImage)
+
 
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
 

@@ -5,6 +5,8 @@ import { Food } from "../model";
 import { GenerateSignature, validatePassword } from "../utils";
 import { findVandor } from "./Admin-Controller";
 
+
+
 export const VandorLogin = async (req: Request, res: Response, next: NextFunction) => {
 
     const { password, email } = <VandorLoginInput>req.body;
@@ -34,6 +36,7 @@ export const VandorLogin = async (req: Request, res: Response, next: NextFunctio
         return res.status(400).json({ message: "Password incorrect" });
     }
 };
+
 
 export const GetVandorProfile = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -69,6 +72,36 @@ export const UpdateVandorProfile = async (req: Request, res: Response, next: Nex
         }
 
         res.json(existingVandor);
+    } else {
+        res.json({
+            message: "No Vandor found",
+        });
+    }
+};
+
+
+export const UpdateCoverImage  = async (req: Request, res: Response, next: NextFunction) => {
+
+    const user = req.user;
+
+    if (user) {
+
+        
+        const vandor = await findVandor(user._id)
+
+        if (vandor !==null) {
+            
+            const files = req.files as [Express.Multer.File]
+
+            const images = files.map((file: Express.Multer.File) => file.filename)
+            
+            vandor.coverImage.push(...images)
+            
+            const result = await vandor.save()
+            
+            res.status(201).json(result)
+        }
+
     } else {
         res.json({
             message: "No Vandor found",
@@ -130,8 +163,6 @@ export const AddFood = async (req: Request, res: Response, next: NextFunction) =
                 rating: 0
             })
 
-            // console.log(createFood)
-
              vandor.foods.push(createFood)
             
             const result = await vandor.save()
@@ -166,3 +197,5 @@ export const GetFoods = async (req: Request, res: Response, next: NextFunction) 
         });
     }
 };
+
+
