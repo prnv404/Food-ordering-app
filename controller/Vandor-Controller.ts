@@ -114,6 +114,10 @@ export const AddFood = async (req: Request, res: Response, next: NextFunction) =
 
         if (vandor !==null) {
             
+            const files = req.files as [Express.Multer.File]
+
+            const images = files.map((file: Express.Multer.File) => file.filename)
+            
             const createFood = await Food.create({
                 vandorId: vandor._id,
                 name:name,
@@ -122,7 +126,7 @@ export const AddFood = async (req: Request, res: Response, next: NextFunction) =
                 foodType:foodType,
                 readyTime:readyTime,
                 price:price,
-                images: ['https://cloudinary.com/food'],
+                images: images,
                 rating: 0
             })
 
