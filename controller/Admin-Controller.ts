@@ -51,9 +51,10 @@ export const CreateVandor = async (req: Request, res: Response, next: NextFuncti
         address: address,
         rating: 1,
         serviceAvailable: false, 
-        coverImage: [],
+        coverImage: ['sample.jpg'],
         salt: salt,
-        email
+        email,
+        foods:[]
     })
 
     return res.json(createdVandor)

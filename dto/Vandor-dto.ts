@@ -24,3 +24,10 @@ export interface VandorPayload {
     _id: string
     foodType:[string]
 }
+
+export interface EditVandorInput {
+    address:string
+    name: string
+    foodType: [string]
+    phone:string
+}

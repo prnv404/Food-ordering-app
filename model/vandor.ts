@@ -43,7 +43,7 @@ const VandorSchema = new Schema({
     
     rating: { type: Number },
     
-    // foods: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'food' }]
+    foods: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Food' }]
     
 }, {
        toJSON: { 
