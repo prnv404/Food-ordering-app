@@ -1,5 +1,5 @@
 import express, { Application } from 'express'
-
+import bodyParser from 'body-parser'
 import path from 'path'
 
 import { AdminRoute, ShoppingRoute, VandorRoute ,CustomerRoute } from '../routes'
@@ -8,11 +8,11 @@ import { AdminRoute, ShoppingRoute, VandorRoute ,CustomerRoute } from '../routes
 export default async(app:Application)=>{
 
 
-    app.use(express.json())
+    app.use(bodyParser.json())
     
-    app.use(express.urlencoded({ extended: true }))
+    app.use(bodyParser.urlencoded({ extended: true }))
 
-    app.use('/images', express.static(path.join(__dirname + '/image')))
+    app.use('/image', express.static(path.join(__dirname + 'image')))
 
     app.use('/admin', AdminRoute)
     

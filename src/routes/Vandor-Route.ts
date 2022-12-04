@@ -7,7 +7,7 @@ import multer from 'multer'
 const imageStorage = multer.diskStorage({
 
     destination: function (req, file, cb) {
-       cb(null,'image')
+       cb(null,'src/image')
     },
 
     filename: function (req, file, cb) {
@@ -17,7 +17,7 @@ const imageStorage = multer.diskStorage({
 })
 
 
-const images = multer({ storage: imageStorage }).array('images', 10)
+const images =  multer({ storage: imageStorage }).array('images', 10)
 
 
 const router = express.Router()
@@ -28,11 +28,15 @@ router.use(Authenticate)
 
 router.get('/profile', GetVandorProfile)
 
-router.patch('/profile',UpdateVandorProfile)
 
-router.patch('/service',UpdateVandorService)
+router.patch('/profile', UpdateVandorProfile)
 
-router.post('/food',images,AddFood)
+
+router.patch('/service', UpdateVandorService)
+
+
+router.post('/food', images, AddFood)
+
 
 router.get('/foods', GetFoods)
 
