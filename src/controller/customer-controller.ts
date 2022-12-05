@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { Customer, CustomerDoc, Food } from '../model'
+import { Customer, Food } from '../model'
 import { plainToClass } from 'class-transformer'
 import { validate } from 'class-validator'
 import { CreateCustomerInput,LoginCustomerInput, EditCustomerProfileInput, OrderInput } from '../dto'
@@ -270,6 +270,7 @@ export const CreateOrder = async (req: Request, res: Response, next: NextFunctio
                 }
             })
         })
+        
 
        // create order with discription
         
