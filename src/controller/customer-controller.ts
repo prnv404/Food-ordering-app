@@ -7,6 +7,7 @@ import { GenerateOtp, GeneratePassword, GenerateSalt, GenerateSignature, onReque
 import { Order } from '../model/order'
 
 
+/** ------------------------ Authentication Section ----------------------------**/ 
 
 
 export const CustomerSignup = async (req: Request, res: Response, next: NextFunction) => {
@@ -175,6 +176,8 @@ export const RequestOtp = async (req: Request, res: Response, next: NextFunction
 
 }
 
+/** ---------------------------------- Profile Section --------------------------------**/ 
+
 
 export const GetCustomerProfile = async (req: Request, res: Response, next: NextFunction) => {
     
@@ -225,6 +228,120 @@ export const EditCustomerProfile = async (req: Request, res: Response, next: Nex
     return res.status(400).json({message:"Error with updating Pofile"})
 
 }
+
+
+/** ---------------------------------- Cart Section --------------------------------**/ 
+
+
+export const AddToCart = async (req: Request, res: Response, next: NextFunction) => {
+
+    const customer = req.user
+
+    const { _id, unit } = <OrderInput>req.body
+    
+    let cartItem = Array()
+
+    if (customer) {
+        
+        const profile  = await Customer.findById(customer._id).populate('cart.food')
+        
+     
+        const food = await Food.findById(_id)
+        
+
+        if (food) {
+            
+            if (profile !== null) {
+                
+                cartItem = profile.cart
+
+                if (cartItem.length > 0) {
+                    // check and update unit
+
+                    let existFoodItem = cartItem.filter((item) => item.food._id.toString() === _id)
+                    
+                    if (existFoodItem.length > 0) {
+                        
+                        const index = cartItem.indexOf(existFoodItem[0])
+
+                        if (unit > 0) {
+                            
+                            cartItem[index] = { food, unit }
+                        } else {
+                            
+                            cartItem.splice(index, 1)
+                        }
+
+                    } else {
+                        
+                        cartItem.push({food,unit})
+                    }
+
+                } else {
+                    // add new item 
+
+                    cartItem.push({food,unit})
+
+                }
+
+                profile.cart = cartItem as any
+
+                const result = await profile.save()
+
+                return res.status(201).json(result.cart)
+
+            }
+        }
+
+    }
+
+    return res.status(400).json({message:"Error with Add to cart"})
+
+}
+
+export const GetCart = async (req: Request, res: Response, next: NextFunction) => {
+  
+    const customer = req.user
+
+    const profile = await Customer.findById(customer._id).populate('cart.food')
+
+    if (profile !== null) {
+        
+        return res.status(200).json(profile.cart)
+    }
+
+    return res.status(400).json({message:"Error with Get the cart"})
+
+}
+
+export const DeleteCart = async (req: Request, res: Response, next: NextFunction) => {
+
+    const customer = req.user
+
+
+    let cartItem = Array()
+    
+    if (customer) {
+        
+    const profile = await Customer.findById(customer._id).populate('cart.food')
+
+        if (profile !== null) {
+            
+            profile.cart = [] as any
+            
+           const result = await profile.save()
+
+           return res.status(201).json(result.cart)
+
+        }   
+    }
+
+    return res.status(400).json({message:"Error with Delete the Cart"})
+
+}
+
+
+/** ---------------------------------- Order Section --------------------------------**/ 
 
 
 export const CreateOrder = async (req: Request, res: Response, next: NextFunction) => {
@@ -332,3 +449,4 @@ export const GetOrderById = async (req: Request, res: Response, next: NextFuncti
 
     }
 }
+
