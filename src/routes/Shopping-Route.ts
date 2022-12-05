@@ -23,13 +23,5 @@ router.get('/search/:pincode',SearchFood)
 
 router.get('/restaurant/:id',RestaurantById)
 
-// order
-
-// cart
-
-// customer
-
-// payment
-
 
 export { router as ShoppingRoute}
