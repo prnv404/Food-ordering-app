@@ -44,3 +44,10 @@ export interface CustomerPayload {
     verified: boolean
     
 }
+
+export class OrderInput  {
+
+    _id: string
+    unit: number
+        
+}
