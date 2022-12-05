@@ -288,6 +288,8 @@ export const CreateOrder = async (req: Request, res: Response, next: NextFunctio
             })
             
             if (currentOrder) {
+                     
+             // finally update order to the user account
                 
                 profile?.Orders.push(currentOrder)
                await profile?.save()
@@ -295,8 +297,7 @@ export const CreateOrder = async (req: Request, res: Response, next: NextFunctio
                 return res.status(200).json(currentOrder)
             }
         }
-        
-    // finally update order to the user account
+   
 
     }
    
@@ -304,8 +305,29 @@ export const CreateOrder = async (req: Request, res: Response, next: NextFunctio
 
 
 export const GetOrders = async (req: Request, res: Response, next: NextFunction) => {
+
+    const customer = req.user
+
+    if (customer) {
+
+        const profile = await Customer.findById(customer._id).populate('Orders')
+
+        return res.status(200).json(profile)
+
+    }
 }
 
 
 export const GetOrderById = async (req: Request, res: Response, next: NextFunction) => {
+
+    const orderId = req.params.id
+
+
+    if (orderId) {
+
+        const profile = await Order.findById(orderId).populate('items.food')
+
+        return res.status(200).json(profile)
+
+    }
 }
