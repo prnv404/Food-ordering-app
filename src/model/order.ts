@@ -13,7 +13,20 @@ export interface OrderDoc extends Document {
 
     paymentResponse: string // {status:true,response:somebankresopnse}
 
-    OrderStaus:string 
+    OrderStaus: string,
+    
+    vendorId: string
+    
+    remarks: string,
+    
+    deliveryId: string,
+    
+    appliedOffers: boolean,
+
+    offerId: string,
+    
+    readyTime: number,
+    
 }
 
 const OrderSchema = new Schema(
@@ -37,7 +50,19 @@ const OrderSchema = new Schema(
     
         paymentResponse: { type: String,  },  // {status:true,response:somebankresopnse}
     
-        OrderStaus: { type: Date,  },  
+        OrderStaus: { type: String, },  
+        
+        vendorId: { type: String, require: true },
+        
+        remarks: { type: String,  }, 
+    
+        deliveryId: { type: String,  }, 
+        
+        appliedOffers: { type: Boolean,  }, 
+    
+        offerId:{ type: String,  }, 
+        
+        readyTime:{ type: Number,  }, 
         
     },
     {
