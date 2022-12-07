@@ -12,7 +12,9 @@ export default async(app:Application)=>{
     
     app.use(bodyParser.urlencoded({ extended: true }))
 
-    app.use('/image', express.static(path.join(__dirname + 'image')))
+    const imagePath = path.join(__dirname + 'image')
+    
+    app.use('/image', express.static(imagePath))
 
     app.use('/admin', AdminRoute)
     

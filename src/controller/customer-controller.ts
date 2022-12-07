@@ -375,12 +375,15 @@ export const CreateOrder = async (req: Request, res: Response, next: NextFunctio
         
         // console.log(foods)
 
+        let vendorId = ''
+
         foods.map((food) => {
             
             cart.map(({ _id, unit }) => {
                 
                 if (food._id == _id) {
                     
+                    vendorId = food.vandorId
                     netAmount += (food.price * unit)
                     cartItem.push({ food, unit })
                     
@@ -396,19 +399,25 @@ export const CreateOrder = async (req: Request, res: Response, next: NextFunctio
             // console.log(cartItem)
             const currentOrder = await Order.create({
                 OrderId: orderId,
+                vendorId:vendorId,
                 items: cartItem,
                 totalAmount: netAmount,
                 paidThrough: 'COD',
                 paymentResponse: '',
                 orderStatus: 'Waiting',
-                orderDate:  Date.now()
+                orderDate: Date.now(),
+                remarks: '',
+                readyTime: 45,
+                deliveryId: '',
+                offerId: '',
+                appliedOffers:false
                 
             })
             
             if (currentOrder) {
                      
              // finally update order to the user account
-                
+                profile.cart = [] as any
                 profile?.Orders.push(currentOrder)
                await profile?.save()
 

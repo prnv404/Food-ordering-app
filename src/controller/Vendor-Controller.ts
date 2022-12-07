@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { EditVandorInput, VandorLoginInput } from "../dto";
 import { CreateFoodInput } from "../dto/Food.dto";
 import { Food } from "../model";
+import { Order } from "../model/order";
 import { GenerateSignature, validatePassword } from "../utils";
 import { findVandor } from "./Admin-Controller";
 
@@ -199,3 +200,67 @@ export const GetFoods = async (req: Request, res: Response, next: NextFunction) 
 };
 
 
+
+export const GetCurrentOrders = async (req: Request, res: Response, next: NextFunction) => {
+
+    const user = req.user
+    
+    if (user) {
+        
+        const orders = await Order.find({ vendorId: user._id }).populate('items.food')
+
+        if (orders !== null) {
+            return res.status(200).json(orders)
+        }
+        
+    }
+    return res.status(400).json({ message: "Error with fetching orders" })
+    
+}
+
+export const GetOrderDetails = async (req: Request, res: Response, next: NextFunction) => {
+
+    const id = req.params.id
+    
+        const order = await Order.findById(id).populate('items.food')
+
+        if (order !== null) {
+            return res.status(200).json(order)
+        }
+        
+    
+    return res.status(400).json({ message: "Error with fetching orders" })
+    
+}
+
+
+export const ProcessOrder = async (req: Request, res: Response, next: NextFunction) => {
+
+    const orderId = req.params.id
+
+    const { status, remarks, time } = req.body
+    
+    if (orderId) {
+        
+        const order = await Order.findById(orderId).populate('items')
+
+        if (order !== null) {
+            
+            order.OrderStaus = status
+            order.remarks = remarks
+            if (time) {
+                order.readyTime = time
+            }
+
+            const orderResult = await order.save()
+
+            if (orderResult !== null) {
+                
+                return res.status(201).json(orderResult)
+            }
+        }
+
+    }
+    return res.status(400).json({ message: "Error with Processing orders" })
+
+}
