@@ -346,4 +346,39 @@ export const AddOffer = async (req: Request, res: Response, next: NextFunction) 
 }
 
 export const EditOffer = async (req: Request, res: Response, next: NextFunction) => {
+
+    const user = req.user
+
+    const offerId = req.params.id
+
+    if (user) {
+        
+        const { title, description, offerAmount, offerType, pincode, promoType, promocode,
+            startValidity, endValidity, bank, bins, isActive, minValue } = <CreateOfferInputs>req.body
+        
+        const vendor = await findVandor(user._id)
+            
+        if (vendor !== null) {
+          
+            const offer = await Offer.findById(offerId)
+           
+            offer.title = title
+            offer.description = description
+            offer.offerAmount =   offerAmount
+            offer.offerType= offerType
+            offer.pincode =  pincode
+            offer.promoType = promoType
+            offer.promocode = promocode
+            offer.startValidity = startValidity
+            offer.endValidity= endValidity
+            offer.bank = bank
+            offer.bins = bins
+            offer.isActive = isActive
+            offer.minValue = minValue
+          
+            const result = await offer.save()
+
+            return res.status(200).json(result)
+        }
+    }
 }
