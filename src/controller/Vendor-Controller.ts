@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { EditVandorInput, VandorLoginInput } from "../dto";
+import { CreateOfferInputs, EditVandorInput, VandorLoginInput } from "../dto";
 import { CreateFoodInput } from "../dto/Food.dto";
-import { Food } from "../model";
+import { Food, Vandor } from "../model";
+import { Offer } from "../model/offer";
 import { Order } from "../model/order";
 import { GenerateSignature, validatePassword } from "../utils";
 import { findVandor } from "./Admin-Controller";
@@ -263,4 +264,86 @@ export const ProcessOrder = async (req: Request, res: Response, next: NextFuncti
     }
     return res.status(400).json({ message: "Error with Processing orders" })
 
+}
+
+export const GetOffer = async (req: Request, res: Response, next: NextFunction) => {
+
+    const user = req.user
+
+    if (user) {
+        
+        const offers = await Offer.find().populate('Vendor')
+
+        if (offers) {
+            
+            let currentOffers = Array()
+
+            offers.map(item => {
+
+                if (item.Vendor) {
+
+                    item.Vendor.map(vendor => {
+
+                        if (vendor._id.toString() == user._id) {
+
+                            currentOffers.push(item)
+
+                        }
+                    })
+                }
+
+                if (item.offerType === 'GENERIC') {
+                    currentOffers.push(item)
+                }
+
+            })
+            return res.status(200).json(currentOffers)
+        }
+       
+    }
+
+    return res.status(400).json({ message: "Error with Getting Offer" })
+
+}
+
+export const AddOffer = async (req: Request, res: Response, next: NextFunction) => {
+
+    const user = req.user
+
+    if (user) {
+        
+        const { title, description, offerAmount, offerType, pincode, promoType, promocode,
+            startValidity, endValidity, bank, bins, isActive, minValue } = <CreateOfferInputs>req.body
+        
+        const vendor = await findVandor(user._id)
+            
+        if (vendor !== null) {
+          
+            const offer = await Offer.create({
+                title,
+                description,
+                offerAmount,
+                offerType,
+                pincode,
+                promoType,
+                promocode,
+                startValidity,
+                endValidity,
+                bank,
+                bins,
+                isActive,
+                minValue,
+                Vendor:[vendor]
+            })
+
+            return res.status(200).json(offer)
+
+        }
+    }
+    return res.status(400).json({ message: "Error with Creating Offer" })
+    
+        
+}
+
+export const EditOffer = async (req: Request, res: Response, next: NextFunction) => {
 }
