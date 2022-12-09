@@ -6,7 +6,6 @@ const StartServer = async () => {
     
     const app = express()
 
-    // console.clear()
     
     await Database()
 
