@@ -1,58 +1,63 @@
-import express from 'express'
+import express from "express";
 import {
-    CreateOrder, CustomerLogin, CustomerSignup, CustomerVerify, EditCustomerProfile,
-    GetCustomerProfile, GetOrderById, GetOrders, RequestOtp, AddToCart, DeleteCart, GetCart
-} from '../controller'
-import { Authenticate } from '../middleware'
+    CreateOrder,
+    CustomerLogin,
+    CustomerSignup,
+    CustomerVerify,
+    EditCustomerProfile,
+    GetCustomerProfile,
+    GetOrderById,
+    GetOrders,
+    RequestOtp,
+    AddToCart,
+    DeleteCart,
+    GetCart,
+} from "../controller";
+import { Authenticate } from "../middleware";
 
-const router = express.Router()
+const router = express.Router();
 
 /* ----------------------- Signup / CreateCustomer--------------------------- */
- 
-router.post('/signup',CustomerSignup)
+
+router.post("/signup", CustomerSignup);
 
 /* ----------------------- Login --------------------------- */
 
-router.post('/login',CustomerLogin)
-
+router.post("/login", CustomerLogin);
 
 // Authentication
 
-router.use(Authenticate)
+router.use(Authenticate);
 /* ----------------------- Verify Customer Account --------------------------- */
 
-router.patch('/verify',CustomerVerify)
+router.patch("/verify", CustomerVerify);
 
 /* ----------------------- OTP / Requesting --------------------------- */
 
-router.get('/otp',RequestOtp)
+router.get("/otp", RequestOtp);
 
 /* ----------------------- Profile --------------------------- */
 
-router.get('/profile',GetCustomerProfile)
+router.get("/profile", GetCustomerProfile);
 
-router.patch('/profile',EditCustomerProfile)
-
+router.patch("/profile", EditCustomerProfile);
 
 // Cart
 
-router.post('/cart',AddToCart)
+router.post("/cart", AddToCart);
 
-router.get('/cart',GetCart)
+router.get("/cart", GetCart);
 
-router.delete('/cart',DeleteCart)
-
+router.delete("/cart", DeleteCart);
 
 // Order
 
-router.post('/create-order', CreateOrder)
+router.post("/create-order", CreateOrder);
 
-router.get('/orders', GetOrders)
+router.get("/orders", GetOrders);
 
-router.get('/order/:id', GetOrderById)
+router.get("/order/:id", GetOrderById);
 
 // Payment
 
-
-
-export {router as CustomerRoute}
+export { router as CustomerRoute };

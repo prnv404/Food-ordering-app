@@ -358,73 +358,73 @@ export const CreateOrder = async (req: Request, res: Response, next: NextFunctio
         
         if (profile !== null) {
             
-        }
-
-       // Grab the order items form request [{ id:xx , unit: xx}]
-        const cart = <[OrderInput]>req.body 
-
-        // console.log(cart)
-
-        let cartItem = Array()
-
-        let netAmount = 0.0
-
-     // calculate the amount
-
-        const foods = await Food.find().where('_id').in(cart.map(item => item._id)).exec()
         
-        // console.log(foods)
 
-        let vendorId = ''
+            // Grab the order items form request [{ id:xx , unit: xx}]
+            const cart = <[OrderInput]>req.body
 
-        foods.map((food) => {
+            // console.log(cart)
+
+            let cartItem = Array()
+
+            let netAmount = 0.0
+
+            // calculate the amount
+
+            const foods = await Food.find().where('_id').in(cart.map(item => item._id)).exec()
+        
+            // console.log(foods)
+
+            let vendorId = ''
+
+            foods.map((food) => {
             
-            cart.map(({ _id, unit }) => {
+                cart.map(({ _id, unit }) => {
                 
-                if (food._id == _id) {
+                    if (food._id == _id) {
                     
-                    vendorId = food.vandorId
-                    netAmount += (food.price * unit)
-                    cartItem.push({ food, unit })
+                        vendorId = food.vandorId
+                        netAmount += (food.price * unit)
+                        cartItem.push({ food, unit })
                     
-                }
+                    }
+                })
             })
-        })
         
 
-       // create order with discription
+            // create order with discription
         
-        if (cartItem) {
+            if (cartItem) {
             
-            // console.log(cartItem)
-            const currentOrder = await Order.create({
-                OrderId: orderId,
-                vendorId:vendorId,
-                items: cartItem,
-                totalAmount: netAmount,
-                paidThrough: 'COD',
-                paymentResponse: '',
-                orderStatus: 'Waiting',
-                orderDate: Date.now(),
-                remarks: '',
-                readyTime: 45,
-                deliveryId: '',
-                offerId: '',
-                appliedOffers:false
+                // console.log(cartItem)
+                const currentOrder = await Order.create({
+                    OrderId: orderId,
+                    vendorId: vendorId,
+                    items: cartItem,
+                    totalAmount: netAmount,
+                    paidThrough: 'COD',
+                    paymentResponse: '',
+                    orderStatus: 'Waiting',
+                    orderDate: Date.now(),
+                    remarks: '',
+                    readyTime: 45,
+                    deliveryId: '',
+                    offerId: '',
+                    appliedOffers: false
                 
-            })
+                })
             
-            if (currentOrder) {
+                if (currentOrder) {
                      
-             // finally update order to the user account
-                profile.cart = [] as any
-                profile?.Orders.push(currentOrder)
-               await profile?.save()
+                    // finally update order to the user account
+                    profile.cart = [] as any
+                    profile?.Orders.push(currentOrder)
+                    await profile?.save()
 
-                return res.status(200).json(currentOrder)
+                    return res.status(200).json(currentOrder)
+                }
             }
         }
-   
 
     }
    
@@ -458,4 +458,6 @@ export const GetOrderById = async (req: Request, res: Response, next: NextFuncti
 
     }
 }
+
+
 

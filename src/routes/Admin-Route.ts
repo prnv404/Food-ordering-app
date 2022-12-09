@@ -1,15 +1,15 @@
 import express, { Request, Response, NextFunction } from "express"
 
-import { CreateVandor, GetVandorById, GetVandors } from "../controller"
+import { CreateVendor, GetVendorById, GetVendors } from "../controller"
 
 
 const router = express.Router()
 
-router.post("/vandor", CreateVandor)
+router.post("/vandor", CreateVendor)
 
-router.get('/vandors', GetVandors)
+router.get('/vandors', GetVendors)
 
-router.get('/vandor/:id', GetVandorById)
+router.get('/vandor/:id', GetVendorById)
 
 
 export { router as AdminRoute }
