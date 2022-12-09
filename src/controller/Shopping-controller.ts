@@ -102,7 +102,7 @@ export const RestaurantById = async (req: Request, res: Response, next: NextFunc
     return res.status(400).json({ message: "Data not found" })
 }
 
-export const GetOffers = async (req: Request, res: Response, next: NextFunction) => {
+export const GetAvailableOffers = async (req: Request, res: Response, next: NextFunction) => {
 
     const pincode = req.params.pincode
 

@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express'
-import { Customer, Food } from '../model'
+import { Customer, Food, Transaction } from '../model'
 import { plainToClass } from 'class-transformer'
 import { validate } from 'class-validator'
 import { CreateCustomerInput,LoginCustomerInput, EditCustomerProfileInput, OrderInput } from '../dto'
 import { GenerateOtp, GeneratePassword, GenerateSalt, GenerateSignature, onRequestOtp, validatePassword } from '../utils'
 import { Order } from '../model/order'
+import { Offer } from '../model/offer'
 
 
 /** ------------------------ Authentication Section ----------------------------**/ 
@@ -459,5 +460,75 @@ export const GetOrderById = async (req: Request, res: Response, next: NextFuncti
     }
 }
 
+export const VerifyOffer = async (req: Request, res: Response, next: NextFunction) => {
+
+    const offerId = req.params.id
+
+    const customer = req.user
+
+    if (customer) {
+        
+        const appliedOffers = await Offer.findById(offerId)
+
+        console.log(appliedOffers)
+
+        if (appliedOffers) {
+
+            if (appliedOffers.promoType == "USER") {
+                
+            } else {
+
+                if (appliedOffers.isActive) {
+                
+                    return res.status(200).json({message:"Offer is valid",appliedOffers})
+                }
+            }
+        }
+    }
+
+    return res.status(400).json({message:"Invalid Offer"})
+
+}
 
 
+export const CreatePayment = async (req: Request, res: Response, next: NextFunction) => {
+
+    const customer = req.user
+
+    const { amount, paymentMode, offerId } = req.body
+
+    let payableAmount = Number(amount)
+
+    if (offerId) {
+        
+        const appliedOffer = await Offer.findById(offerId)
+
+        if (appliedOffer.isActive) {
+            
+            payableAmount = (payableAmount - parseInt(appliedOffer.offerAmount))
+
+        }
+
+    }
+
+    // Payment GateWay charge Api call
+
+    // Create Record on Transaction
+
+    const transaction = await Transaction.create({
+
+        customer: customer._id,
+        vendorId: '',
+        orderId: '',
+        orderValue: payableAmount,
+        offerUsed: offerId || 'NA',
+        status: 'OPEN',
+        paymentMode: paymentMode,
+        paymentResponse:'Payment is Cash on delivery'
+        
+    })
+
+    // return Transaction ID
+    return res.status(201).json(transaction)
+
+}
