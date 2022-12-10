@@ -45,9 +45,19 @@ export interface CustomerPayload {
     
 }
 
-export class OrderInput  {
+
+export class CartItem  {
 
     _id: string
     unit: number
+       
+}
+
+
+export class OrderInput  {
+
+    tnxId: string
+    amount: string
+    items:[CartItem]
         
 }

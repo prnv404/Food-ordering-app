@@ -24,7 +24,7 @@ const OfferSchema = new Schema({
     offerType: {type:String,require:true},
     Vendor: [{
         type: mongoose.Types.ObjectId,
-        ref:"Vandor"
+        ref:"Vendor"
     }],
     title: {type:String,require:true},
     description: String,

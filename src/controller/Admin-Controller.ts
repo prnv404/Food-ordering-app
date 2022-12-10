@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { CreateVendorInput } from '../dto'
-import { Vendor } from '../model'
+import { Transaction, Vendor } from '../model'
 import { GeneratePassword, GenerateSalt } from '../utils'
 
 
@@ -28,6 +28,7 @@ export const CreateVendor = async (req: Request, res: Response, next: NextFuncti
     }
 
     // generate salt 
+
     const salt = await GenerateSalt()
 
     // genearte encrypt password
@@ -52,7 +53,10 @@ export const CreateVendor = async (req: Request, res: Response, next: NextFuncti
     })
 
     return res.json(createdVendor)
+
 }
+
+
 
 
 export const GetVendors = async (req: Request, res: Response, next: NextFunction) => {
@@ -76,5 +80,34 @@ export const GetVendorById = async (req: Request, res: Response, next: NextFunct
     if (!vendor) return res.status(400).json({ message: "No vendor Found" })
     
     return res.status(200).json(vendor)
+
+}
+
+export const GetTransactions = async (req: Request, res: Response, next: NextFunction) => {
+    
+    const transactions = await Transaction.find()
+
+    if (transactions !== null) {
+        
+        return res.status(200).json(transactions)
+    }
+    
+    return res.status(400).json({ message: "No Transaction Found" })
+}
+
+
+
+export const GetTransactionById = async (req: Request, res: Response, next: NextFunction) => {
+    
+    const tnxId = req.params.id
+
+    const transaction = await Transaction.findById(tnxId)
+
+    if (transaction !== null) {
+        
+        return res.status(200).json(transaction)
+    }
+    
+    return res.status(400).json({ message: "No Transaction Found" })
 
 }

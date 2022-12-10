@@ -2,14 +2,13 @@ import { Request, Response, NextFunction } from 'express'
 import { Customer, Food, Transaction } from '../model'
 import { plainToClass } from 'class-transformer'
 import { validate } from 'class-validator'
-import { CreateCustomerInput,LoginCustomerInput, EditCustomerProfileInput, OrderInput } from '../dto'
+import { CreateCustomerInput,LoginCustomerInput, EditCustomerProfileInput, OrderInput, CartItem } from '../dto'
 import { GenerateOtp, GeneratePassword, GenerateSalt, GenerateSignature, onRequestOtp, validatePassword } from '../utils'
 import { Order } from '../model/order'
 import { Offer } from '../model/offer'
 
 
 /** ------------------------ Authentication Section ----------------------------**/ 
-
 
 export const CustomerSignup = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -198,7 +197,7 @@ export const GetCustomerProfile = async (req: Request, res: Response, next: Next
 
 export const EditCustomerProfile = async (req: Request, res: Response, next: NextFunction) => {
     
-    const customer = req.user?._id
+    const customer = req.user._id
     console.log(customer)
 
     const EditProfileInput = plainToClass(EditCustomerProfileInput, req.body)
@@ -238,7 +237,7 @@ export const AddToCart = async (req: Request, res: Response, next: NextFunction)
 
     const customer = req.user
 
-    const { _id, unit } = <OrderInput>req.body
+    const { _id, unit } = <CartItem>req.body
     
     let cartItem = Array()
 
@@ -341,154 +340,7 @@ export const DeleteCart = async (req: Request, res: Response, next: NextFunction
 
 }
 
-
-/** ---------------------------------- Order Section --------------------------------**/ 
-
-
-export const CreateOrder = async (req: Request, res: Response, next: NextFunction) => {
-
-    // Grab the customer id from request
-    const customer = req.user
-
-    if (customer) {
-        
-      // create an order id
-        const orderId = `${Math.floor(Math.random() * 899999) + 1000}`
-
-        const profile  = await Customer.findById(customer._id)
-        
-        if (profile !== null) {
-            
-        
-
-            // Grab the order items form request [{ id:xx , unit: xx}]
-            const cart = <[OrderInput]>req.body
-
-            // console.log(cart)
-
-            let cartItem = Array()
-
-            let netAmount = 0.0
-
-            // calculate the amount
-
-            const foods = await Food.find().where('_id').in(cart.map(item => item._id)).exec()
-        
-            // console.log(foods)
-
-            let vendorId = ''
-
-            foods.map((food) => {
-            
-                cart.map(({ _id, unit }) => {
-                
-                    if (food._id == _id) {
-                    
-                        vendorId = food.vandorId
-                        netAmount += (food.price * unit)
-                        cartItem.push({ food, unit })
-                    
-                    }
-                })
-            })
-        
-
-            // create order with discription
-        
-            if (cartItem) {
-            
-                // console.log(cartItem)
-                const currentOrder = await Order.create({
-                    OrderId: orderId,
-                    vendorId: vendorId,
-                    items: cartItem,
-                    totalAmount: netAmount,
-                    paidThrough: 'COD',
-                    paymentResponse: '',
-                    orderStatus: 'Waiting',
-                    orderDate: Date.now(),
-                    remarks: '',
-                    readyTime: 45,
-                    deliveryId: '',
-                    offerId: '',
-                    appliedOffers: false
-                
-                })
-            
-                if (currentOrder) {
-                     
-                    // finally update order to the user account
-                    profile.cart = [] as any
-                    profile?.Orders.push(currentOrder)
-                    await profile?.save()
-
-                    return res.status(200).json(currentOrder)
-                }
-            }
-        }
-
-    }
-   
-}
-
-
-export const GetOrders = async (req: Request, res: Response, next: NextFunction) => {
-
-    const customer = req.user
-
-    if (customer) {
-
-        const profile = await Customer.findById(customer._id).populate('Orders')
-
-        return res.status(200).json(profile)
-
-    }
-}
-
-
-export const GetOrderById = async (req: Request, res: Response, next: NextFunction) => {
-
-    const orderId = req.params.id
-
-
-    if (orderId) {
-
-        const profile = await Order.findById(orderId).populate('items.food')
-
-        return res.status(200).json(profile)
-
-    }
-}
-
-export const VerifyOffer = async (req: Request, res: Response, next: NextFunction) => {
-
-    const offerId = req.params.id
-
-    const customer = req.user
-
-    if (customer) {
-        
-        const appliedOffers = await Offer.findById(offerId)
-
-        console.log(appliedOffers)
-
-        if (appliedOffers) {
-
-            if (appliedOffers.promoType == "USER") {
-                
-            } else {
-
-                if (appliedOffers.isActive) {
-                
-                    return res.status(200).json({message:"Offer is valid",appliedOffers})
-                }
-            }
-        }
-    }
-
-    return res.status(400).json({message:"Invalid Offer"})
-
-}
+/** ---------------------------------- Payment Section --------------------------------**/ 
 
 
 export const CreatePayment = async (req: Request, res: Response, next: NextFunction) => {
@@ -532,3 +384,177 @@ export const CreatePayment = async (req: Request, res: Response, next: NextFunct
     return res.status(201).json(transaction)
 
 }
+
+
+/** ---------------------------------- Order Section --------------------------------**/ 
+
+
+const validateTransaction = async (tnxId: string) => {
+    
+    const currentTransaction = await Transaction.findById(tnxId)
+
+    if (currentTransaction.status.toLowerCase() !== 'failed') {
+        
+        return {status:true,currentTransaction}
+    }
+
+    return {status:false,currentTransaction}
+
+}
+
+
+export const CreateOrder = async (req: Request, res: Response, next: NextFunction) => {
+
+    // Grab the customer id from request
+    const customer = req.user
+
+    const { tnxId,amount,items} = <OrderInput>req.body
+
+    if (customer) {
+        
+      // create an order id
+        const orderId = `${Math.floor(Math.random() * 899999) + 1000}`
+
+        const profile  = await Customer.findById(customer._id)
+        
+        if (profile !== null) {            
+
+            const { status, currentTransaction } = await validateTransaction(tnxId)
+            
+            if (!status) {
+                
+                return res.status(400).json({message:"Transaction Id is not valid"})
+            }
+
+            let cartItem = Array()
+
+            let netAmount = 0.0
+
+            // calculate the amount
+
+            const foods = await Food.find().where('_id').in(items.map(item => item._id)).exec()
+        
+            // console.log(foods)
+
+            let vendorId = ''
+
+            foods.map((food) => {
+            
+                items.map(({ _id, unit }) => {
+                
+                    if (food._id == _id) {
+                    
+                        vendorId = food.vandorId
+                        netAmount += (food.price * unit)
+                        cartItem.push({ food, unit })
+                    
+                    }
+                })
+            })
+        
+
+            // create order with discription
+        
+            if (cartItem) {
+            
+                // console.log(cartItem)
+                const currentOrder = await Order.create({
+                    OrderId: orderId,
+                    vendorId: vendorId,
+                    
+                    items: cartItem,
+                    totalAmount: netAmount,
+                    paidAmount:amount,
+                    orderStatus: 'Waiting',
+                    orderDate: Date.now(),
+                    remarks: '',
+                    readyTime: 45,
+                    deliveryId: '',
+                
+                })
+            
+                if (currentOrder) {
+                     
+                    // finally update order to the user account
+                    profile.cart = [] as any
+                    profile?.Orders.push(currentOrder)
+                    await profile?.save()
+
+                    currentTransaction.vendorId = vendorId
+                    currentTransaction.orderId = orderId
+                    currentTransaction.status = 'CONFIRMED'
+
+                    await currentTransaction.save()
+
+                    return res.status(200).json(currentOrder)
+                }
+            }
+        }
+
+    }
+   
+}
+
+
+export const GetOrders = async (req: Request, res: Response, next: NextFunction) => {
+
+    const customer = req.user
+
+    if (customer) {
+
+        const profile = await Customer.findById(customer._id).populate('Orders')
+
+        return res.status(200).json(profile)
+
+    }
+}
+
+
+export const GetOrderById = async (req: Request, res: Response, next: NextFunction) => {
+
+    const orderId = req.params.id
+
+
+    if (orderId) {
+
+        const profile = await Order.findById(orderId).populate('items.food')
+
+        return res.status(200).json(profile)
+
+    }
+}
+
+
+export const VerifyOffer = async (req: Request, res: Response, next: NextFunction) => {
+
+    const offerId = req.params.id
+
+    const customer = req.user
+
+    if (customer) {
+        
+        const appliedOffers = await Offer.findById(offerId)
+
+        console.log(appliedOffers)
+
+        if (appliedOffers) {
+
+            if (appliedOffers.promoType == "USER") {
+                
+            } else {
+
+                if (appliedOffers.isActive) {
+                
+                    return res.status(200).json({message:"Offer is valid",appliedOffers})
+                }
+            }
+        }
+    }
+
+    return res.status(400).json({message:"Invalid Offer"})
+
+}
+
+
+
+

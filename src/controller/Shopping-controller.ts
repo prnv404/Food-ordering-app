@@ -7,7 +7,7 @@ export const GetFoodAvailablity = async (req: Request, res: Response, next: Next
 
     const pincode = req.params.pincode
 
-    const result = await Vendor.find({ pincode: pincode, serviceAvailable: false })
+    const result = await Vendor.find({ pincode: pincode, serviceAvailable: true })
     .sort([['rating', 'descending']])
     .populate('foods')
     
@@ -25,7 +25,7 @@ export const GetTopRestaurant = async (req: Request, res: Response, next: NextFu
     
     const pincode = req.params.pincode
 
-    const result = await Vendor.find({ pincode: pincode, serviceAvailable: false })
+    const result = await Vendor.find({ pincode: pincode, serviceAvailable:  true})
     .sort([['rating', 'descending']])
     
     
@@ -43,7 +43,7 @@ export const GetFoodsIn30Min = async (req: Request, res: Response, next: NextFun
     
     const pincode = req.params.pincode
 
-    const result = await Vendor.find({ pincode: pincode, serviceAvailable: false })
+    const result = await Vendor.find({ pincode: pincode, serviceAvailable: true })
     .populate('foods')
     
     
@@ -71,7 +71,7 @@ export const SearchFood = async (req: Request, res: Response, next: NextFunction
     
     const pincode = req.params.pincode
 
-    const result = await Vendor.find({ pincode: pincode, serviceAvailable: false })
+    const result = await Vendor.find({ pincode: pincode, serviceAvailable: true })
     .populate('foods')
     
     if (result.length > 0) {
