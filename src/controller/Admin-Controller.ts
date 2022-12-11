@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { CreateVendorInput } from '../dto'
 import { Transaction, Vendor } from '../model'
-import { GeneratePassword, GenerateSalt } from '../utils'
+import { GeneratePassword, GenerateSalt } from '../utility'
 
 
 

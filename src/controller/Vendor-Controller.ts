@@ -4,7 +4,7 @@ import { CreateFoodInput } from "../dto/Food.dto";
 import { Food, Vendor } from "../model";
 import { Offer } from "../model/offer";
 import { Order } from "../model/order";
-import { GenerateSignature, validatePassword } from "../utils";
+import { GenerateSignature, ValidatePassword } from "../utility";
 import { findVendor } from "./Admin-Controller";
 
 
@@ -17,7 +17,7 @@ export const VendorLogin = async (req: Request, res: Response, next: NextFunctio
 
     if (!existingVandor) return res.status(401).json({ message: "No Vendor found" });
 
-    const validation = await validatePassword(
+    const validation = await ValidatePassword(
         password,
         existingVandor.password,
         existingVandor.salt

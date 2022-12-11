@@ -3,7 +3,7 @@ import { Customer, Food, Transaction } from '../model'
 import { plainToClass } from 'class-transformer'
 import { validate } from 'class-validator'
 import { CreateCustomerInput,LoginCustomerInput, EditCustomerProfileInput, OrderInput, CartItem } from '../dto'
-import { GenerateOtp, GeneratePassword, GenerateSalt, GenerateSignature, onRequestOtp, validatePassword } from '../utils'
+import { GenerateOtp, GeneratePassword, GenerateSalt, GenerateSignature, onRequestOTP, ValidatePassword } from '../utility'
 import { Order } from '../model/order'
 import { Offer } from '../model/offer'
 
@@ -55,7 +55,7 @@ export const CustomerSignup = async (req: Request, res: Response, next: NextFunc
     if (customer) {
         
         // Send OTP to customer
-        await onRequestOtp(otp, phone)
+        await onRequestOTP(otp, phone)
         
         // Generate Signature
         const signature = GenerateSignature({ 
@@ -90,7 +90,7 @@ export const CustomerLogin = async (req: Request, res: Response, next: NextFunct
     
     if (customer) {
         
-        const validate = await validatePassword(password, customer.password,customer.salt)
+        const validate = await ValidatePassword(password, customer.password,customer.salt)
         
         if (validate) {
             
@@ -165,7 +165,7 @@ export const RequestOtp = async (req: Request, res: Response, next: NextFunction
 
             await profile.save()
 
-            await onRequestOtp(otp, profile.phone)
+            await onRequestOTP(otp, profile.phone)
             
             return res.status(200).json({message:"OTP Succesfully sent to your registerd number"})
         }
