@@ -405,14 +405,11 @@ const assignOrderForDelivery = async (orderId: string, vendorId: string) => {
         // check the nearest delivery person
         
 
-
         // update the delivery Id
        
     }
 }    
  
-
-
 
 /** ---------------------------------- Order Section --------------------------------**/ 
 
