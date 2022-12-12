@@ -116,10 +116,17 @@ export const UpdateVendorService = async (req: Request, res: Response, next: Nex
 
     const user = req.user;
 
+    const { lag, lat } = req.body
+    
     if (user) {
         const existingVendor = await findVendor(user._id);
 
         if (existingVendor !== null) {
+
+            if (lag && lat) {
+                existingVendor.lag = lag
+                existingVendor.lat = lat
+            }
            
             existingVendor.serviceAvailable = !existingVendor.serviceAvailable
             await existingVendor.save();

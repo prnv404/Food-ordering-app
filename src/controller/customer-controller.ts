@@ -318,7 +318,6 @@ export const DeleteCart = async (req: Request, res: Response, next: NextFunction
 
     const customer = req.user
 
-
     let cartItem = Array()
     
     if (customer) {
@@ -384,6 +383,20 @@ export const CreatePayment = async (req: Request, res: Response, next: NextFunct
     return res.status(201).json(transaction)
 
 }
+
+/** ------------------------ Delivery notificatin Section ----------------------------**/ 
+
+const assignOrderForDelivery = async (orderId: string, vendorId: string) => {
+    
+    // find the vendor 
+
+    // find the available delivery person
+
+    // check the nearest delivery person
+
+    // update the delivery Id
+}
+
 
 
 /** ---------------------------------- Order Section --------------------------------**/ 
@@ -481,7 +494,7 @@ export const CreateOrder = async (req: Request, res: Response, next: NextFunctio
                     await profile?.save()
 
                     currentTransaction.vendorId = vendorId
-                    currentTransaction.orderId = orderId
+                    currentTransaction.orderId = currentOrder._id
                     currentTransaction.status = 'CONFIRMED'
 
                     await currentTransaction.save()
@@ -554,7 +567,4 @@ export const VerifyOffer = async (req: Request, res: Response, next: NextFunctio
     return res.status(400).json({message:"Invalid Offer"})
 
 }
-
-
-
 

@@ -14,6 +14,8 @@ interface VendorDoc extends Document {
     coverImage: [string]
     rating: number
     foods:any
+    lat: number
+    lag:number
 }
 
 
@@ -43,7 +45,12 @@ const VandorSchema = new Schema({
     
     rating: { type: Number },
     
-    foods: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Food' }]
+    foods: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Food' }],
+
+    lat: { type: Number },
+
+    lag: { type: Number },
+    
     
 }, {
        toJSON: { 

@@ -49,7 +49,9 @@ export const CreateVendor = async (req: Request, res: Response, next: NextFuncti
         coverImage: ['sample.jpg'],
         salt: salt,
         email,
-        foods:[]
+        foods: [],
+        lag: 0,
+        lat:0
     })
 
     return res.json(createdVendor)
