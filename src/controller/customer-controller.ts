@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { Customer, Food, Transaction } from '../model'
+import { Customer, Food, Transaction, Vendor } from '../model'
 import { plainToClass } from 'class-transformer'
 import { validate } from 'class-validator'
 import { CreateCustomerInput,LoginCustomerInput, EditCustomerProfileInput, OrderInput, CartItem } from '../dto'
@@ -388,14 +388,29 @@ export const CreatePayment = async (req: Request, res: Response, next: NextFunct
 
 const assignOrderForDelivery = async (orderId: string, vendorId: string) => {
     
+
     // find the vendor 
+    const vendor = await Vendor.findById(vendorId)
+   
 
-    // find the available delivery person
+    if (vendor) {
 
-    // check the nearest delivery person
+        const areaCode = vendor.pincode
+        const vendorLag = vendor.lag
+        const vendorLat = vendor.lat
 
-    // update the delivery Id
-}
+         // find the available delivery person
+        
+
+        // check the nearest delivery person
+        
+
+
+        // update the delivery Id
+       
+    }
+}    
+ 
 
 
 
