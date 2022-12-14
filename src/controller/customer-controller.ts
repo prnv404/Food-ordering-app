@@ -23,9 +23,11 @@ export const CustomerSignup = async (req: Request, res: Response, next: NextFunc
 
     const { email, phone, password } = customerInput
     
-    const salt = await GenerateSalt()
 
-    const userPassword = await GeneratePassword(password, salt)
+    let salt = await GenerateSalt()
+    
+
+    const userPassword:string = await GeneratePassword(password, salt)
 
 
     const { otp, expiry } = GenerateOtp()
@@ -94,7 +96,7 @@ export const CustomerLogin = async (req: Request, res: Response, next: NextFunct
         
         if (validate) {
             
-            const signature = GenerateSignature({ 
+            const signature =await  GenerateSignature({ 
                 email: email,
                 _id: customer._id,
                 verified: customer.verifed
