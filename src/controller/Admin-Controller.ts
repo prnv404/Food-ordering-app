@@ -17,7 +17,9 @@ export const findVendor = async (id: string | undefined, email?: string) => {
 
 
 
-export const CreateVendor = async (req: Request, res: Response, next: NextFunction) => {
+
+export const CreateVandor = async (req: Request, res: Response, _next: NextFunction) => {
+
     
     const { name, password, phone, foodType, ownerName, pincode, address ,email} = <CreateVendorInput>req.body
     
@@ -60,8 +62,8 @@ export const CreateVendor = async (req: Request, res: Response, next: NextFuncti
 
 
 
+export const GetVandors = async (_req: Request, res: Response, _next: NextFunction) => {
 
-export const GetVendors = async (req: Request, res: Response, next: NextFunction) => {
     
     const vendors = await Vendor.find()
 
@@ -73,13 +75,15 @@ export const GetVendors = async (req: Request, res: Response, next: NextFunction
 
 
 
-export const GetVendorById = async (req: Request, res: Response, next: NextFunction) => {
-    
+
+export const GetVandorById = async (req: Request, res: Response, _next: NextFunction) => {
+
     const vendorId = req.params.id
 
     const vendor = await findVendor(vendorId)
 
     if (!vendor) return res.status(400).json({ message: "No vendor Found" })
+
     
     return res.status(200).json(vendor)
 
