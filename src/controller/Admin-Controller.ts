@@ -17,7 +17,7 @@ export const findVandor = async (id: string | undefined, email?: string) => {
 
 
 
-export const CreateVandor = async (req: Request, res: Response, next: NextFunction) => {
+export const CreateVandor = async (req: Request, res: Response, _next: NextFunction) => {
     
     const { name, password, phone, foodType, ownerName, pincode, address ,email} = <CreateVandorInput>req.body
     
@@ -55,7 +55,7 @@ export const CreateVandor = async (req: Request, res: Response, next: NextFuncti
 }
 
 
-export const GetVandors = async (req: Request, res: Response, next: NextFunction) => {
+export const GetVandors = async (_req: Request, res: Response, _next: NextFunction) => {
     
     const vandors = await Vandor.find()
 
@@ -67,7 +67,7 @@ export const GetVandors = async (req: Request, res: Response, next: NextFunction
 
 
 
-export const GetVandorById = async (req: Request, res: Response, next: NextFunction) => {
+export const GetVandorById = async (req: Request, res: Response, _next: NextFunction) => {
     
     const vandorId = req.params.id
 
