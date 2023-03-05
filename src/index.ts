@@ -6,8 +6,6 @@ const StartServer = async () => {
     
     const app = express()
 
-    // console.clear()
-    
     await Database()
 
     await App(app)
@@ -16,6 +14,7 @@ const StartServer = async () => {
        
         console.log("server is listening port 8000")
     })
+
 }
 
 StartServer()

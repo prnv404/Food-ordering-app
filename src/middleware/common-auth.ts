@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthPayload } from "../dto/Auth-Dto";
-import { ValidateSignature } from "../utils";
+import { ValidateSignature } from "../utility";
 
 declare global {
     namespace Express{

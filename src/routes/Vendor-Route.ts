@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express'
-import { AddFood, AddOffer, EditOffer, GetCurrentOrders, GetFoods, GetOffer, GetOrderDetails, GetVandorProfile, ProcessOrder, UpdateCoverImage, UpdateVandorProfile, UpdateVandorService, VandorLogin } from '../controller'
+import { AddFood, AddOffer, EditOffer, GetCurrentOrders, GetFoods, GetOffer, GetOrderDetails, GetVendorProfile, ProcessOrder, UpdateCoverImage, UpdateVendorProfile, UpdateVendorService, VendorLogin } from '../controller'
 import { Authenticate } from '../middleware'
 import multer from 'multer'
 
@@ -22,15 +22,15 @@ const images =  multer({ storage: imageStorage }).array('images', 10)
 
 const router = express.Router()
 
-router.post('/login', VandorLogin)
+router.post('/login', VendorLogin)
 
 router.use(Authenticate)
 
-router.get('/profile', GetVandorProfile)
+router.get('/profile', GetVendorProfile)
 
-router.patch('/profile', UpdateVandorProfile)
+router.patch('/profile', UpdateVendorProfile)
 
-router.patch('/service', UpdateVandorService)
+router.patch('/service', UpdateVendorService)
 
 // Foods
 

@@ -1,23 +1,23 @@
 import { Request, Response, NextFunction } from "express";
-import { CreateOfferInputs, EditVandorInput, VandorLoginInput } from "../dto";
+import { CreateOfferInputs, EditVendorInput, VendorLoginInput } from "../dto";
 import { CreateFoodInput } from "../dto/Food.dto";
-import { Food, Vandor } from "../model";
+import { Food, Vendor } from "../model";
 import { Offer } from "../model/offer";
 import { Order } from "../model/order";
-import { GenerateSignature, validatePassword } from "../utils";
-import { findVandor } from "./Admin-Controller";
+import { GenerateSignature, ValidatePassword } from "../utility";
+import { findVendor } from "./Admin-Controller";
 
 
 
-export const VandorLogin = async (req: Request, res: Response, next: NextFunction) => {
+export const VendorLogin = async (req: Request, res: Response, next: NextFunction) => {
 
-    const { password, email } = <VandorLoginInput>req.body;
+    const { password, email } = <VendorLoginInput>req.body;
 
-    const existingVandor = await findVandor("", email);
+    const existingVandor = await findVendor("", email);
 
-    if (!existingVandor) return res.status(401).json({ message: "No Vandor found" });
+    if (!existingVandor) return res.status(401).json({ message: "No Vendor found" });
 
-    const validation = await validatePassword(
+    const validation = await ValidatePassword(
         password,
         existingVandor.password,
         existingVandor.salt
@@ -40,13 +40,13 @@ export const VandorLogin = async (req: Request, res: Response, next: NextFunctio
 };
 
 
-export const GetVandorProfile = async (req: Request, res: Response, next: NextFunction) => {
+export const GetVendorProfile = async (req: Request, res: Response, next: NextFunction) => {
 
     const user = req.user;
 
     if (user) {
-        const existingVandor = await findVandor(user._id);
-        res.json(existingVandor);
+        const existingVendor = await findVendor(user._id);
+        res.json(existingVendor);
     } else {
         res.json({
             message: "No Vandor found",
@@ -54,29 +54,29 @@ export const GetVandorProfile = async (req: Request, res: Response, next: NextFu
     }
 };
 
-export const UpdateVandorProfile = async (req: Request, res: Response, next: NextFunction) => {
+export const UpdateVendorProfile = async (req: Request, res: Response, next: NextFunction) => {
 
     const user = req.user;
 
-    const { name, phone, address, foodType } = <EditVandorInput>req.body;
+    const { name, phone, address, foodType } = <EditVendorInput>req.body;
 
     if (user) {
-        const existingVandor = await findVandor(user._id);
+        const existingVendor = await findVendor(user._id);
 
-        if (existingVandor !== null) {
+        if (existingVendor !== null) {
 
-            existingVandor.name = name;
-            existingVandor.phone = phone;
-            existingVandor.address = address;
-            existingVandor.foodType = foodType;
+            existingVendor.name = name;
+            existingVendor.phone = phone;
+            existingVendor.address = address;
+            existingVendor.foodType = foodType;
 
-            await existingVandor.save();
+            await existingVendor.save();
         }
 
-        res.json(existingVandor);
+        res.json(existingVendor);
     } else {
         res.json({
-            message: "No Vandor found",
+            message: "No Vendor found",
         });
     }
 };
@@ -89,48 +89,55 @@ export const UpdateCoverImage  = async (req: Request, res: Response, next: NextF
     if (user) {
 
         
-        const vandor = await findVandor(user._id)
+        const vendor = await findVendor(user._id)
 
-        if (vandor !==null) {
+        if (vendor !==null) {
             
             const files = req.files as [Express.Multer.File]
 
             const images = files.map((file: Express.Multer.File) => file.filename)
             
-            vandor.coverImage.push(...images)
+            vendor.coverImage.push(...images)
             
-            const result = await vandor.save()
+            const result = await vendor.save()
             
             res.status(201).json(result)
         }
 
     } else {
         res.json({
-            message: "No Vandor found",
+            message: "No Vendor found",
         });
     }
 };
 
 
-export const UpdateVandorService = async (req: Request, res: Response, next: NextFunction) => {
+export const UpdateVendorService = async (req: Request, res: Response, next: NextFunction) => {
 
     const user = req.user;
 
+    const { lag, lat } = req.body
+    
     if (user) {
-        const existingVandor = await findVandor(user._id);
+        const existingVendor = await findVendor(user._id);
 
-        if (existingVandor !== null) {
+        if (existingVendor !== null) {
+
+            if (lag && lat) {
+                existingVendor.lag = lag
+                existingVendor.lat = lat
+            }
            
-            existingVandor.serviceAvailable = !existingVandor.serviceAvailable
-            await existingVandor.save();
+            existingVendor.serviceAvailable = !existingVendor.serviceAvailable
+            await existingVendor.save();
 
         }
 
-        res.json(existingVandor);
+        res.json(existingVendor);
 
     } else {
         res.json({
-            message: "No Vandor found",
+            message: "No Vendor found",
         });
     }
 };
@@ -145,16 +152,16 @@ export const AddFood = async (req: Request, res: Response, next: NextFunction) =
 
         const { name, description, category, foodType, readyTime, price } = <CreateFoodInput>req.body
         
-        const vandor = await findVandor(user._id)
+        const vendor = await findVendor(user._id)
 
-        if (vandor !==null) {
+        if (vendor !==null) {
             
             const files = req.files as [Express.Multer.File]
 
             const images = files.map((file: Express.Multer.File) => file.filename)
             
             const createFood = await Food.create({
-                vandorId: vandor._id,
+                vendorId: vendor._id,
                 name:name,
                 description: description,
                 category:category,
@@ -165,16 +172,16 @@ export const AddFood = async (req: Request, res: Response, next: NextFunction) =
                 rating: 0
             })
 
-             vandor.foods.push(createFood)
+             vendor.foods.push(createFood)
             
-            const result = await vandor.save()
+            const result = await vendor.save()
             
             res.status(201).json(result)
         }
 
     } else {
         res.json({
-            message: "No Vandor found",
+            message: "No Vendor found",
         });
     }
 };
@@ -186,7 +193,7 @@ export const GetFoods = async (req: Request, res: Response, next: NextFunction) 
 
     if (user) {
         
-        const Foods = await Food.find({ vandorId: user._id })
+        const Foods = await Food.find({ vendorId: user._id })
 
         if (Foods !== null) {
             
@@ -195,7 +202,7 @@ export const GetFoods = async (req: Request, res: Response, next: NextFunction) 
 
     } else {
         res.json({
-            message: "No Vandor found",
+            message: "No Vendor found",
         });
     }
 };
@@ -315,7 +322,7 @@ export const AddOffer = async (req: Request, res: Response, next: NextFunction) 
         const { title, description, offerAmount, offerType, pincode, promoType, promocode,
             startValidity, endValidity, bank, bins, isActive, minValue } = <CreateOfferInputs>req.body
         
-        const vendor = await findVandor(user._id)
+        const vendor = await findVendor(user._id)
             
         if (vendor !== null) {
           
@@ -356,7 +363,7 @@ export const EditOffer = async (req: Request, res: Response, next: NextFunction)
         const { title, description, offerAmount, offerType, pincode, promoType, promocode,
             startValidity, endValidity, bank, bins, isActive, minValue } = <CreateOfferInputs>req.body
         
-        const vendor = await findVandor(user._id)
+        const vendor = await findVendor(user._id)
             
         if (vendor !== null) {
           

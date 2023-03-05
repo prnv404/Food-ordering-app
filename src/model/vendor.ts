@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from 'mongoose'
 
-interface VandorDoc extends Document {
+interface VendorDoc extends Document {
     name: string
     ownerName: string
     foodType: [string]
@@ -14,6 +14,8 @@ interface VandorDoc extends Document {
     coverImage: [string]
     rating: number
     foods:any
+    lat: number
+    lag:number
 }
 
 
@@ -43,7 +45,12 @@ const VandorSchema = new Schema({
     
     rating: { type: Number },
     
-    foods: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Food' }]
+    foods: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Food' }],
+
+    lat: { type: Number },
+
+    lag: { type: Number },
+    
     
 }, {
        toJSON: { 
@@ -59,6 +66,6 @@ const VandorSchema = new Schema({
         timestamps: true
     })
 
-const Vandor = mongoose.model<VandorDoc>('Vandor', VandorSchema)
+const Vendor = mongoose.model<VendorDoc>('Vendor', VandorSchema)
 
-export { Vandor }
+export { Vendor }

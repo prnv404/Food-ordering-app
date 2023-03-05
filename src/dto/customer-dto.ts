@@ -45,9 +45,40 @@ export interface CustomerPayload {
     
 }
 
-export class OrderInput  {
+
+export class CartItem  {
 
     _id: string
     unit: number
+       
+}
+
+
+export class OrderInput  {
+
+    tnxId: string
+    amount: string
+    items:[CartItem]
         
+}
+
+export class CreateDeliveryUserInput  {
+
+    @IsEmail()
+    email: string
+    
+    password: string
+    
+    @Length(10, 12)   
+    phone: string
+
+    @Length(3, 12)   
+    firstName: string
+    
+    @Length(1, 12)   
+    lastName: string
+
+    @Length(3, 120)   
+    address: string
+
 }

@@ -7,11 +7,9 @@ export interface OrderDoc extends Document {
 
     totalAmount: number, //500
 
+    paidAmount:number
+
     orderDate: Date, 
-
-    paidThrough: string, // COD ,CreditCard, Wallet
-
-    paymentResponse: string // {status:true,response:somebankresopnse}
 
     OrderStaus: string,
     
@@ -20,10 +18,6 @@ export interface OrderDoc extends Document {
     remarks: string,
     
     deliveryId: string,
-    
-    appliedOffers: boolean,
-
-    offerId: string,
     
     readyTime: number,
     
@@ -43,12 +37,10 @@ const OrderSchema = new Schema(
         ] ,   // [{food,unit:2}]
     
         totalAmount: { type: Number, required: true }, //500
-    
+
+        paidAmount: { type: Number, required: true }, //500
+
         orderDate: { type: Date, required: true }, 
-    
-        paidThrough: { type: String,  },  // COD ,CreditCard, Wallet
-    
-        paymentResponse: { type: String,  },  // {status:true,response:somebankresopnse}
     
         OrderStaus: { type: String, },  
         
@@ -57,10 +49,6 @@ const OrderSchema = new Schema(
         remarks: { type: String,  }, 
     
         deliveryId: { type: String,  }, 
-        
-        appliedOffers: { type: Boolean,  }, 
-    
-        offerId:{ type: String,  }, 
         
         readyTime:{ type: Number,  }, 
         
