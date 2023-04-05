@@ -5,11 +5,11 @@ import { CreateVendor, GetTransactionById, GetTransactions, GetVendorById, GetVe
 
 const router = express.Router()
 
-router.post("/vandor", CreateVendor)
+router.post("/vendor", CreateVendor)
 
-router.get('/vandors', GetVendors)
+router.get('/vendors', GetVendors)
 
-router.get('/vandor/:id', GetVendorById)
+router.get('/vendor/:id', GetVendorById)
 
 router.get('/transactions', GetTransactions)
 
